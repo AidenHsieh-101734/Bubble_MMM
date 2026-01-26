@@ -1,5 +1,5 @@
 // Authentication form handling
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
 
@@ -22,7 +22,7 @@ function setupLoginForm() {
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
 
         const email = emailInput.value.trim();
@@ -48,7 +48,7 @@ function setupRegisterForm() {
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirm-password');
 
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
 
         const username = usernameInput.value.trim();
@@ -77,11 +77,11 @@ function setupRegisterForm() {
  */
 function setupPasswordToggles() {
     const toggles = document.querySelectorAll('.password-toggle');
-    
+
     toggles.forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
+        toggle.addEventListener('click', function (e) {
             e.preventDefault();
-            
+
             const inputId = this.id.replace('-toggle', '');
             const input = document.getElementById(inputId);
             const icon = this.querySelector('i');
@@ -218,16 +218,16 @@ function clearError(elementId) {
 /**
  * Social authentication handlers (placeholder)
  */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const socialButtons = document.querySelectorAll('.social-button');
-    
+
     socialButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
+        button.addEventListener('click', function (e) {
             e.preventDefault();
-            
+
             const isGoogle = this.classList.contains('google-button');
             const isGithub = this.classList.contains('github-button');
-            
+
             if (isGoogle) {
                 console.log('Google authentication initiated');
                 // Implement Google OAuth

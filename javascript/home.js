@@ -1,21 +1,17 @@
 const allNewsImgs = document.querySelectorAll(".news-content");
 let currentIndex = 0;
 
-// Initialize - show first content
 if (allNewsImgs.length > 0) {
     allNewsImgs[0].classList.add('active');
 }
 
-// Function to switch to a specific slide
+// -- HELPER FUNCTIONS -- \\
 function switchSlide(index) {
     if (allNewsImgs.length === 0) return;
-    
-    // Remove active class from all content
+
     allNewsImgs.forEach(img => img.classList.remove('active'));
-    
-    // Add active class to selected content
     allNewsImgs[index].classList.add('active');
-    
+
     currentIndex = index;
 }
 
@@ -31,11 +27,10 @@ function omlaag() {
     switchSlide(nextIndex);
 }
 
-// Toggle repeat mode
 function toggleRepeat() {
     const repeatNormal = document.getElementById('repeat-normal');
     const repeatOne = document.getElementById('repeat-one');
-    
+
     if (repeatNormal.style.display === 'none') {
         repeatNormal.style.display = 'block';
         repeatOne.style.display = 'none';
@@ -48,3 +43,4 @@ function toggleRepeat() {
 function login() {
     window.location.href = "../view/login.html";
 }
+

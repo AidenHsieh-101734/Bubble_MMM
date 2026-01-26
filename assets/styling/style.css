@@ -1,23 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Syncopate:wght@400;700&display=swap');
-body{
+
+* {
+    scroll-behavior: smooth;
+}
+
+body {
     all: unset;
     color: white;
     background: black;
     font-family: 'Space Grotesk';
     font-weight: 650;
 }
-h1{
+
+h1 {
     font-family: 'Syncopate', sans-serif;
 }
-body input{
+
+body input {
     font-family: 'Space Grotesk';
 }
-header a{
+
+header a {
     transition: 0.3s;
 }
-header a:hover{
+
+header a:hover {
     color: #EEAECA;
 }
+
 #canvas-container {
     z-index: -1;
 }
