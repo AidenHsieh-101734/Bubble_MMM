@@ -1,0 +1,28 @@
+.exploreSection{
+    width: 85%;
+    border: white 4px solid;
+    border-radius: 50px;
+    margin-top: 10px;
+}
+.exploreSectionBTN{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+    background-color: rgba(255, 255, 255, 0.152);
+    height: 50px;
+}
+.exploreSectionBTN button{
+    all: unset;
+    font-family: 'Syncopate', sans-serif;
+}
+#animationdiv{
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(188, 188, 188, 0.283);
+    z-index: 1;
+    border-radius: 20px;;
+}

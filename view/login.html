@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inloggen - Bubble</title>
+    <link rel="stylesheet" href="../styling/style.css">
+    <link rel="stylesheet" href="../styling/auth.css">
+    <link rel="stylesheet" href="../styling/home.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+</head>
+
+<body>
+    <div id="canvas-container"></div>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <h1>Bubble</h1>
+                <p>Welkom terug!</p>
+            </div>
+
+            <form id="login-form" class="auth-form" action="">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="je@email.com" required>
+                    <span class="error-message" id="email-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Wachtwoord</label>
+                    <div class="password-input-group">
+                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                        <button type="button" class="password-toggle" id="password-toggle">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="error-message" id="password-error"></span>
+                </div>
+
+                <button type="submit" class="auth-button">Inloggen</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Nog geen account? <a href="register.html">Registreer hier</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../javascript/surreal-bg.js"></script>
+    <script src="../javascript/auth.js"></script>
+
+        <script type="module">
+        import { initSurrealBackground } from '../javascript/surreal-bg.js'
+
+        initSurrealBackground('canvas-container')
+    </script>
+</body>
+
+</html>
