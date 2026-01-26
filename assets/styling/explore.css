@@ -1,10 +1,11 @@
 .exploreSection{
-    width: 85%;
+    width: 84%;
     border: white 4px solid;
     border-radius: 50px;
     margin-top: 10px;
 }
 .exploreSectionBTN{
+    position: relative;
     width: 100%;
     display: flex;
     justify-content: space-around;
@@ -12,17 +13,30 @@
     background-color: rgba(255, 255, 255, 0.152);
     height: 50px;
 }
+#animationdiv{
+    position: absolute;
+    width: 25%;
+    height: 100%;
+    top: 0;
+    background-color: rgba(188, 188, 188, 0.283);
+    z-index: 1;
+    border-radius: 20px;;
+}
 .exploreSectionBTN button{
     all: unset;
     font-family: 'Syncopate', sans-serif;
 }
-#animationdiv{
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background-color: rgba(188, 188, 188, 0.283);
-    z-index: 1;
-    border-radius: 20px;;
+.Lees{
+    display: flex;
+    justify-content: center;
+    gap: 70px;
+    text-align: center;
+    margin-top: 50px;
+}
+.leesdiv{
+    font-size: 1.1rem;
+    background-color: aqua;
+}
+.leesdiv img{
+    width: 250px;
 }
