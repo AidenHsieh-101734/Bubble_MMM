@@ -1,8 +1,20 @@
+body{
+    overflow: hidden;
+}
 .exploreSection{
     width: 84%;
     border: white 4px solid;
     border-radius: 50px;
     margin-top: 10px;
+    overflow: scroll;
+}
+.exploreSection::-webkit-scrollbar {
+    display: none;
+  }
+main{
+    height: 100vh;
+    margin: 0;
+    margin-bottom: 10px;
 }
 .exploreSectionBTN{
     position: relative;
@@ -13,30 +25,54 @@
     background-color: rgba(255, 255, 255, 0.152);
     height: 50px;
 }
-#animationdiv{
-    position: absolute;
-    width: 25%;
-    height: 100%;
-    top: 0;
-    background-color: rgba(188, 188, 188, 0.283);
-    z-index: 1;
-    border-radius: 20px;;
-}
 .exploreSectionBTN button{
     all: unset;
+    cursor: pointer;
     font-family: 'Syncopate', sans-serif;
+    z-index: 2;
+}
+.LeesContainer{
+    margin-top: 50px;
 }
 .Lees{
     display: flex;
     justify-content: center;
     gap: 70px;
     text-align: center;
-    margin-top: 50px;
+    margin-bottom: 30px;
 }
+.Lees::-webkit-scrollbar {
+    display: none;
+  }
 .leesdiv{
     font-size: 1.1rem;
-    background-color: aqua;
+    background-color: #9055f8;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.leesdiv:hover{
+    transform: translateY(-10px);
 }
 .leesdiv img{
     width: 250px;
+    border-radius: 16px;
+}
+.LeesContainer h2{
+    margin: 10px 50px 30px 50px;
+}
+#BekijkSection, #LuisterSection{
+    display: none;
+}
+#animationdiv{
+    position: absolute;
+    width: 25%;
+    height: 100%;
+    top: 0;
+    left: 4%;
+    background-color: rgba(188, 188, 188, 0.283);
+    z-index: 1;
+    border-radius: 226px;
+    transition: 0.3s;
 }
