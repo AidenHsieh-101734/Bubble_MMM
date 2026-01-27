@@ -654,6 +654,7 @@ hr {
     background: linear-gradient(135deg, rgba(144, 85, 248, 0.2), rgba(0, 0, 0, 0));
     border-radius: var(--radius-md);
     font-size: 0.9rem;
+    font-family: sans-serif;
     color: var(--text-muted);
     max-height: 210px;
     overflow-y: auto;
@@ -866,7 +867,7 @@ hr {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .favorite-info p:first-child {
@@ -1106,7 +1107,7 @@ hr {
     font-size: 1.2rem;
 }
 
-.library-content > section > h3 {
+.library-content>section>h3 {
     margin-top: 40px;
     margin-bottom: 20px;
     font-size: 1.2rem;
