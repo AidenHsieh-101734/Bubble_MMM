@@ -99,7 +99,7 @@
                     <input type="text" placeholder="Browse all music, playlists and more..." id="zoekbalk">
                 </div>
 
-                <div class="explore-content">
+                <div class="explore-content" id="exploreContent">
                     <h2>Browse All</h2>
 
                     <div class="explore-grid">
@@ -199,7 +199,7 @@
                             </svg>
                         </div>
 
-                        <div class="explore-category glass-panel"
+                        <div class="explore-category glass-panel" onclick="aiden()"
                             style="background: linear-gradient(135deg, rgba(255, 236, 210, 0.3), rgba(252, 182, 159, 0.3)), var(--bg-glass);">
                             <h3>Aiden</h3>
                             <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24"
@@ -278,6 +278,188 @@
                         <div class="explore-category glass-panel"
                             style="background: linear-gradient(135deg, rgba(66, 165, 245, 0.3), rgba(2, 119, 189, 0.3)), var(--bg-glass);">
                             <h3>Travel</h3>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--Hier staan de verborgen lists voor elke categorie-->
+
+                <div class="favorites-content noScrollbar" id="Aiden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                    <div class="favorite-header">
+                        <div class="favorite-cover">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"
+                                fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="lucide lucide-heart">
+                                <path
+                                    d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                            </svg>
+                        </div>
+                        <div class="favorite-info">
+                            <p>Playlist</p>
+                            <h1>Aiden</h1>
+                            <div class="favorite-meta">
+                                <p>52 songs</p>
+                                <span>•</span>
+                                <p>3h 24min</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="favorite-controls">
+                        <button class="favorite-play-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                                fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
+                                <path
+                                    d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
+                            </svg>
+                        </button>
+                        <button class="favorite-heart-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
+                                fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="lucide lucide-heart">
+                                <path
+                                    d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                            </svg>
+                        </button>
+                        <button class="favorite-menu-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="lucide lucide-more-vertical">
+                                <circle cx="12" cy="12" r="1" />
+                                <circle cx="12" cy="5" r="1" />
+                                <circle cx="12" cy="19" r="1" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="favorite-songs-list">
+                        <div class="favorite-song-item">
+                            <div class="favorite-song-left">
+                                <span class="favorite-song-number">1</span>
+                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
+                                <div class="favorite-song-info">
+                                    <h3>Genshin Impact</h3>
+                                    <p>Money</p>
+                                </div>
+                            </div>
+                            <div class="favorite-song-right">
+                                <p class="favorite-song-album">Money</p>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
+                                    <path
+                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                                </svg>
+                                <p class="favorite-song-duration">3:45</p>
+                            </div>
+                        </div>
+
+                        <div class="favorite-song-item">
+                            <div class="favorite-song-left">
+                                <span class="favorite-song-number">2</span>
+                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
+                                <div class="favorite-song-info">
+                                    <h3>Genshin Impact</h3>
+                                    <p>Money</p>
+                                </div>
+                            </div>
+                            <div class="favorite-song-right">
+                                <p class="favorite-song-album">Money</p>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
+                                    <path
+                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                                </svg>
+                                <p class="favorite-song-duration">4:12</p>
+                            </div>
+                        </div>
+
+                        <div class="favorite-song-item">
+                            <div class="favorite-song-left">
+                                <span class="favorite-song-number">3</span>
+                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
+                                <div class="favorite-song-info">
+                                    <h3>Genshin Impact</h3>
+                                    <p>Money</p>
+                                </div>
+                            </div>
+                            <div class="favorite-song-right">
+                                <p class="favorite-song-album">Money</p>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
+                                    <path
+                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                                </svg>
+                                <p class="favorite-song-duration">5:01</p>
+                            </div>
+                        </div>
+
+                        <div class="favorite-song-item">
+                            <div class="favorite-song-left">
+                                <span class="favorite-song-number">4</span>
+                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
+                                <div class="favorite-song-info">
+                                    <h3>Genshin Impact</h3>
+                                    <p>Money</p>
+                                </div>
+                            </div>
+                            <div class="favorite-song-right">
+                                <p class="favorite-song-album">Money</p>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
+                                    <path
+                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                                </svg>
+                                <p class="favorite-song-duration">3:28</p>
+                            </div>
+                        </div>
+
+                        <div class="favorite-song-item">
+                            <div class="favorite-song-left">
+                                <span class="favorite-song-number">5</span>
+                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
+                                <div class="favorite-song-info">
+                                    <h3>Genshin Impact</h3>
+                                    <p>Money</p>
+                                </div>
+                            </div>
+                            <div class="favorite-song-right">
+                                <p class="favorite-song-album">Money</p>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
+                                    <path
+                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                                </svg>
+                                <p class="favorite-song-duration">4:33</p>
+                            </div>
+                        </div>
+
+                        <div class="favorite-song-item">
+                            <div class="favorite-song-left">
+                                <span class="favorite-song-number">6</span>
+                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
+                                <div class="favorite-song-info">
+                                    <h3>Genshin Impact</h3>
+                                    <p>Money</p>
+                                </div>
+                            </div>
+                            <div class="favorite-song-right">
+                                <p class="favorite-song-album">Money</p>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
+                                    <path
+                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                                </svg>
+                                <p class="favorite-song-duration">6:15</p>
+                            </div>
                         </div>
                     </div>
                 </div>
