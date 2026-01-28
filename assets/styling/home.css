@@ -834,7 +834,22 @@ hr {
         width: 100%;
     }
 }
+.volume-btn{
+    border: none;
+    background-color: #000000;
+}
+.repeat-btn{
+    border: none;
+    background-color: #000000;
+}
 
+.player-extra > button{
+    transition: 0.2s;
+}
+.player-extra > button:hover{
+    transform: scale(1.2);
+    color: var(--primary);
+}
 /* ========================================
    FAVORIETE CSS
    ======================================== */
@@ -913,7 +928,13 @@ hr {
     align-items: center;
     justify-content: center;
     box-shadow: 0 8px 24px rgba(238, 174, 202, 0.4);
-    transition: transform 0.2s;
+    transition: 0.2s;
+}
+
+.favorite-play-btn:hover{
+    transform: rotate(15deg);
+    box-shadow: 0 0 15px var(--accent);
+    background-color: var(--accent);
 }
 
 .favorite-heart-btn {
@@ -923,6 +944,13 @@ hr {
     cursor: pointer;
     font-size: 2rem;
     transition: color 0.2s;
+    border-radius: 100%;
+    transition: 0.2s;
+}
+
+.favorite-heart-btn:hover{
+    transform: rotate(15deg);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .favorite-menu-btn {
@@ -1022,7 +1050,9 @@ hr {
     gap: 20px;
     margin-bottom: 40px;
 }
-
+.radio-grid > div:hover{
+    border: 1px solid var(--border-focus);
+}
 .radio-station-cover {
     width: 100%;
     aspect-ratio: 1;
@@ -1102,6 +1132,9 @@ hr {
     margin-bottom: 60px;
 }
 
+.library-recent-scroll > div:hover{
+    border: 1px solid var(--border-focus);
+}
 .library-section h3 {
     margin-bottom: 20px;
     font-size: 1.2rem;
@@ -1156,6 +1189,10 @@ hr {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.library-songs-list > div:hover{
+    border: 1px solid var(--border-focus);
 }
 
 .library-song-item {
@@ -1247,7 +1284,9 @@ hr {
 .library-stat-item:last-child .library-stat-number {
     color: var(--primary);
 }
-
+.library-albums-grid > div:hover{
+    border: 1px solid var(--border-focus);
+}
 /* ========================================
    EXPLORE CSS
    ======================================== */
@@ -1312,4 +1351,18 @@ hr {
 .explore-pick-card p {
     color: var(--text-muted);
     font-size: 0.8rem;
+}
+#radioHero{
+    overflow: hidden;
+}
+#favorieteHero{
+    overflow: hidden;
+}
+.favorite-songs-list{
+    padding-bottom: 30px;
+}
+
+.noScrollbar{
+    display: none;
+    height: auto;
 }
