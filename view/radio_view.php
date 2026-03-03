@@ -1,3 +1,10 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../logic/utils/auth.php';
+require_once __DIR__ . '/../logic/content/songs.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,6 +14,7 @@
     <title>Bubble - Radio</title>
     <link rel="stylesheet" href="../assets/styling/style.css">
     <link rel="stylesheet" href="../assets/styling/home.css">
+    <link rel="stylesheet" href="../assets/styling/favorites.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
@@ -24,7 +32,7 @@
 
                 <div class="navbar">
                     <div class="nav">
-                        <a href="../index.html">
+                        <a href="../index.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-house-icon lucide-house">
@@ -34,7 +42,7 @@
                             </svg>
                             Home
                         </a>
-                        <a href="explore.html">
+                        <a href="explore_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-compass-icon lucide-compass">
@@ -44,7 +52,7 @@
                             </svg>
                             Explore
                         </a>
-                        <a href="radio.html" class="active">
+                        <a href="radio_view.php" class="active">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-radio-icon lucide-radio">
@@ -56,7 +64,7 @@
                             </svg>
                             Radio
                         </a>
-                        <a href="library.html">
+                        <a href="library_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-library-icon lucide-library">
@@ -75,7 +83,7 @@
                 <div class="navbar Library">
                     <h3>YOUR PLAYLIST</h3>
                     <div class="nav">
-                        <a href="favoriete.html">
+                        <a href="favoriete_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
@@ -103,161 +111,40 @@
                     <h2>Popular Radio Stations</h2>
 
                     <div class="radio-grid">
-                        <div class="radio-station glass-panel">
-                            <div class="radio-station-cover"
-                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"
-                                    fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M16.247 7.761a6 6 0 0 1 0 8.478" />
-                                    <path d="M19.075 4.933a10 10 0 0 1 0 14.134" />
-                                    <path d="M4.925 19.067a10 10 0 0 1 0-14.134" />
-                                    <path d="M7.753 16.239a6 6 0 0 1 0-8.478" />
-                                    <circle cx="12" cy="12" r="2" />
-                                </svg>
+                        <?php
+                        $genres = getAllGenres();
+                        foreach ($genres as $genre):
+                            // Generate deterministic colors
+                            $hash = md5($genre . 'radio');
+                            $color1 = '#' . substr($hash, 0, 6);
+                            $color2 = '#' . substr($hash, 6, 6);
+                            $gradient = "linear-gradient(135deg, $color1 0%, $color2 100%)";
+                            ?>
+                            <div class="radio-station glass-panel">
+                                <div class="radio-station-cover" style="background: <?= $gradient ?>;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"
+                                        fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M16.247 7.761a6 6 0 0 1 0 8.478" />
+                                        <path d="M19.075 4.933a10 10 0 0 1 0 14.134" />
+                                        <path d="M4.925 19.067a10 10 0 0 1 0-14.134" />
+                                        <path d="M7.753 16.239a6 6 0 0 1 0-8.478" />
+                                        <circle cx="12" cy="12" r="2" />
+                                    </svg>
+                                </div>
+                                <h3><?= htmlspecialchars($genre) ?> Station</h3>
+                                <p>Non-stop <?= htmlspecialchars($genre) ?> hits</p>
+                                <button class="play-mix" onclick="playGenreStation('<?= htmlspecialchars($genre) ?>')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
+                                        <path
+                                            d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
+                                    </svg>
+                                    LISTEN NOW
+                                </button>
                             </div>
-                            <h3>Genshin Impact</h3>
-                            <p>Money Brings happienes</p>
-                            <button class="play-mix">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                    <path
-                                        d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                </svg>
-                                LISTEN NOW
-                            </button>
-                        </div>
-
-                        <div class="radio-station glass-panel">
-                            <div class="radio-station-cover"
-                                style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"
-                                    fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M16.247 7.761a6 6 0 0 1 0 8.478" />
-                                    <path d="M19.075 4.933a10 10 0 0 1 0 14.134" />
-                                    <path d="M4.925 19.067a10 10 0 0 1 0-14.134" />
-                                    <path d="M7.753 16.239a6 6 0 0 1 0-8.478" />
-                                    <circle cx="12" cy="12" r="2" />
-                                </svg>
-                            </div>
-                            <h3>Genshin Impact</h3>
-                            <p>Money Brings happienes</p>
-                            <button class="play-mix">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                    <path
-                                        d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                </svg>
-                                LISTEN NOW
-                            </button>
-                        </div>
-
-                        <div class="radio-station glass-panel">
-                            <div class="radio-station-cover"
-                                style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"
-                                    fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M16.247 7.761a6 6 0 0 1 0 8.478" />
-                                    <path d="M19.075 4.933a10 10 0 0 1 0 14.134" />
-                                    <path d="M4.925 19.067a10 10 0 0 1 0-14.134" />
-                                    <path d="M7.753 16.239a6 6 0 0 1 0-8.478" />
-                                    <circle cx="12" cy="12" r="2" />
-                                </svg>
-                            </div>
-                            <h3>Genshin Impact</h3>
-                            <p>Money Brings happienes</p>
-                            <button class="play-mix">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                    <path
-                                        d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                </svg>
-                                LISTEN NOW
-                            </button>
-                        </div>
-
-                        <div class="radio-station glass-panel">
-                            <div class="radio-station-cover"
-                                style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"
-                                    fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M16.247 7.761a6 6 0 0 1 0 8.478" />
-                                    <path d="M19.075 4.933a10 10 0 0 1 0 14.134" />
-                                    <path d="M4.925 19.067a10 10 0 0 1 0-14.134" />
-                                    <path d="M7.753 16.239a6 6 0 0 1 0-8.478" />
-                                    <circle cx="12" cy="12" r="2" />
-                                </svg>
-                            </div>
-                            <h3>Genshin Impact</h3>
-                            <p>Money Brings happienes</p>
-                            <button class="play-mix">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                    <path
-                                        d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                </svg>
-                                LISTEN NOW
-                            </button>
-                        </div>
-
-                        <div class="radio-station glass-panel">
-                            <div class="radio-station-cover"
-                                style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"
-                                    fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M16.247 7.761a6 6 0 0 1 0 8.478" />
-                                    <path d="M19.075 4.933a10 10 0 0 1 0 14.134" />
-                                    <path d="M4.925 19.067a10 10 0 0 1 0-14.134" />
-                                    <path d="M7.753 16.239a6 6 0 0 1 0-8.478" />
-                                    <circle cx="12" cy="12" r="2" />
-                                </svg>
-                            </div>
-                            <h3>Genshin Impact</h3>
-                            <p>Money Brings happienes</p>
-                            <button class="play-mix">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                    <path
-                                        d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                </svg>
-                                LISTEN NOW
-                            </button>
-                        </div>
-
-                        <div class="radio-station glass-panel">
-                            <div class="radio-station-cover"
-                                style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"
-                                    fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M16.247 7.761a6 6 0 0 1 0 8.478" />
-                                    <path d="M19.075 4.933a10 10 0 0 1 0 14.134" />
-                                    <path d="M4.925 19.067a10 10 0 0 1 0-14.134" />
-                                    <path d="M7.753 16.239a6 6 0 0 1 0-8.478" />
-                                    <circle cx="12" cy="12" r="2" />
-                                </svg>
-                            </div>
-                            <h3>Genshin Impact</h3>
-                            <p>Money Brings happienes</p>
-                            <button class="play-mix">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                    <path
-                                        d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                </svg>
-                                LISTEN NOW
-                            </button>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -285,14 +172,26 @@
                                 d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
                         </svg>
                     </button>
-                    <button onclick="login()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-user-icon lucide-user">
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </button>
+                    <?php if (isAuthenticated()): ?>
+                        <button onclick="window.location.href='profile_view.php'" title="Profile">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-user-icon lucide-user">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </button>
+                    <?php else: ?>
+                        <button onclick="login()" class="sign-in-btn" title="Sign in">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-user-icon lucide-user">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <span class="sign-in-text">Sign in</span>
+                        </button>
+                    <?php endif; ?>
                 </div>
 
                 <div class="playing">
@@ -309,27 +208,14 @@
                 <div class="nextsongs">
                     <h3>Next song</h3>
 
-                    <div class="nextup">
-                        <div class="lirbrarySongs" id="playing">
-                            <div class="songimg">
-                                <img src="../assets/images/albumcover1.png" alt="">
-                                <div class="songdetails">
-                                    <h3>Song Name</h3>
-                                    <div class="exstrInfo">
-                                        <p>Artist Name • 2024</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="songduration">
-                                <p>3:45</p>
-                            </div>
-                        </div>
+                    <div class="nextup next-songs">
+                        <p class="no-upcoming">No songs in queue</p>
                     </div>
                 </div>
                 <div class="lyrics">
-                    <h2>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis numquam dicta quos, aperiam nam
-                        beatae iure</h2>
+                    <h2>Lyrics</h2>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 1rem;">No lyrics available
+                    </p>
                 </div>
             </div>
         </main>
@@ -412,6 +298,9 @@
     </div>
 
     <script src="../javascript/home.js"></script>
+    <script src="../javascript/audio-player.js"></script>
+    <script src="../javascript/queue-manager.js"></script>
+    <script src="../javascript/player-ui.js"></script>
     <script type="module">
         import { initSurrealBackground } from '../javascript/surreal-bg.js'
         initSurrealBackground('canvas-container')

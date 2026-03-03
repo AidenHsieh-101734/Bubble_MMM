@@ -15,7 +15,7 @@ export function initSurrealBackground(containerId) {
     scene.fog = new THREE.FogExp2(0x050505, 0.002);
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 20;
+    camera.position.z = 25;
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -24,39 +24,50 @@ export function initSurrealBackground(containerId) {
 
     // --- Objects: Glass Bubbles ---
     const geometry = new THREE.SphereGeometry(1, 32, 32);
+    // Enhanced material for a more "surreal" glass look
     const material = new THREE.MeshPhysicalMaterial({
-        color: 0x8b5cf6, // Violet base
+        color: 0xffffff,
+        emissive: 0x9055f8,
+        emissiveIntensity: 0.1,
         roughness: 0,
-        metalness: 0.1,
-        transmission: 0.9,
+        metalness: 0.2,
+        transmission: 1,
         transparent: true,
-        opacity: 0.3,
+        opacity: 0.4,
         clearcoat: 1.0,
-        clearcoatRoughness: 0.1
+        clearcoatRoughness: 0.1,
+        ior: 1.5,
+        reflectivity: 0.5
     });
 
     const bubbles = [];
-    const bubbleCount = 78; // Increased count for "surreal" density
+    const bubbleCount = 100;
 
     for (let i = 0; i < bubbleCount; i++) {
-        const bubble = new THREE.Mesh(geometry, material);
+        const bubble = new THREE.Mesh(geometry, material.clone());
 
-        // Random positions
-        bubble.position.x = (Math.random() - 0.5) * 60;
-        bubble.position.y = (Math.random() - 0.5) * 60;
-        bubble.position.z = (Math.random() - 0.5) * 40 - 10;
+        // Vary colors slightly for surreal effect
+        const hue = Math.random() * 0.1 + 0.75; // Purple/Pink range
+        bubble.material.color.setHSL(hue, 0.5, 0.9);
+        bubble.material.emissive.setHSL(hue, 0.8, 0.5);
 
-        // Random scales
-        const scale = Math.random() * 2.5 + 0.5;
+        // Random positions spread wider
+        bubble.position.x = (Math.random() - 0.5) * 80;
+        bubble.position.y = (Math.random() - 0.5) * 80;
+        bubble.position.z = (Math.random() - 0.5) * 50 - 10;
+
+        // Varied scales
+        const scale = Math.random() * 3 + 0.5;
         bubble.scale.set(scale, scale, scale);
 
         // Custom animation data
         bubble.userData = {
-            speedY: Math.random() * 0.03 + 0.005,
+            speedY: Math.random() * 0.04 + 0.01,
             speedX: (Math.random() - 0.5) * 0.02,
-            wobbleSpeed: Math.random() * 0.02,
+            wobbleSpeed: Math.random() * 2 + 0.5,
             wobbleOffset: Math.random() * Math.PI * 2,
-            initialX: bubble.position.x
+            initialX: bubble.position.x,
+            baseScale: scale
         };
 
         scene.add(bubble);
@@ -64,16 +75,20 @@ export function initSurrealBackground(containerId) {
     }
 
     // --- Lighting ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);
 
-    const pointLight1 = new THREE.PointLight(0xc084fc, 2, 50);
-    pointLight1.position.set(10, 10, 10);
+    const pointLight1 = new THREE.PointLight(0x9055f8, 3, 100);
+    pointLight1.position.set(20, 20, 20);
     scene.add(pointLight1);
 
-    const pointLight2 = new THREE.PointLight(0xe879f9, 2, 50);
-    pointLight2.position.set(-10, -10, 10);
+    const pointLight2 = new THREE.PointLight(0xEEAECA, 3, 100);
+    pointLight2.position.set(-20, -20, 20);
     scene.add(pointLight2);
+
+    // Moving light for dynamic reflections
+    const movingLight = new THREE.PointLight(0x00ffff, 2, 80);
+    scene.add(movingLight);
 
     // --- Interaction ---
     let mouseX = 0;
@@ -81,10 +96,9 @@ export function initSurrealBackground(containerId) {
     let targetX = 0;
     let targetY = 0;
 
-    // Use window for mouse move to catch it everywhere
     window.addEventListener('mousemove', (event) => {
-        mouseX = (event.clientX - window.innerWidth / 2) * 0.01;
-        mouseY = (event.clientY - window.innerHeight / 2) * 0.01;
+        mouseX = (event.clientX - window.innerWidth / 2) * 0.05;
+        mouseY = (event.clientY - window.innerHeight / 2) * 0.05;
     });
 
     // --- Animation Loop ---
@@ -93,32 +107,56 @@ export function initSurrealBackground(containerId) {
 
         const time = Date.now() * 0.001;
 
-        // Smooth camera movement
+        // Animate moving light
+        movingLight.position.x = Math.sin(time * 0.5) * 30;
+        movingLight.position.y = Math.cos(time * 0.3) * 30;
+        movingLight.position.z = Math.sin(time * 0.2) * 20 + 10;
+
+        // Smooth camera movement with damping
         targetX = mouseX * 0.5;
         targetY = mouseY * 0.5;
 
-        camera.position.x += (targetX - camera.position.x) * 0.05;
-        camera.position.y += (-targetY - camera.position.y) * 0.05;
+        camera.position.x += (targetX - camera.position.x) * 0.02;
+        camera.position.y += (-targetY - camera.position.y) * 0.02;
         camera.lookAt(scene.position);
 
         // Animate Bubbles
-        bubbles.forEach(bubble => {
-            // Rise
-            bubble.position.y += bubble.userData.speedY;
-            bubble.position.x += bubble.userData.speedX;
+        bubbles.forEach((bubble) => {
+            const ud = bubble.userData;
 
-            // Reset loop
-            if (bubble.position.y > 30) {
-                bubble.position.y = -30;
-                bubble.position.x = bubble.userData.initialX + (Math.random() - 0.5) * 10;
+            // Interaction: repulsive force from mouse/camera look
+            const dx = camera.position.x - bubble.position.x;
+            const dy = camera.position.y - bubble.position.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < 15) {
+                ud.speedX += -dx * 0.001;
+                ud.speedY += -dy * 0.001;
             }
 
-            // Wobble
-            const wobble = Math.sin(time + bubble.userData.wobbleOffset) * 0.05;
-            // bubble.scale.setScalar(bubble.scale.x + wobble * 0.001); // Minimal breathe
+            // Damping logic for interaction
+            ud.speedX *= 0.98;
+            // Maintain base upward drift
+            if (ud.speedY < 0.01) ud.speedY += 0.0005;
+
+            // Rise
+            bubble.position.y += ud.speedY;
+            bubble.position.x += ud.speedX;
+
+            // Reset loop
+            if (bubble.position.y > 40) {
+                bubble.position.y = -40;
+                bubble.position.x = ud.initialX + (Math.random() - 0.5) * 20;
+                ud.speedX = (Math.random() - 0.5) * 0.02;
+                ud.speedY = Math.random() * 0.04 + 0.01;
+            }
+
+            // Wobble/Pulse
+            const wobble = Math.sin(time * ud.wobbleSpeed + ud.wobbleOffset) * 0.1;
+            bubble.scale.setScalar(ud.baseScale + wobble);
 
             // Rotate
-            bubble.rotation.x += 0.002;
+            bubble.rotation.x += 0.001;
             bubble.rotation.y += 0.002;
         });
 

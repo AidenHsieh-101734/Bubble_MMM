@@ -1,3 +1,24 @@
+<?php
+require_once __DIR__ . '/logic/utils/auth.php';
+require_once __DIR__ . '/logic/content/songs.php';
+require_once __DIR__ . '/logic/content/albums.php';
+require_once __DIR__ . '/logic/content/artists.php';
+require_once __DIR__ . '/logic/content/articles.php';
+require_once __DIR__ . '/logic/content/playlists.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$isLoggedIn = isAuthenticated();
+$currentUser = $isLoggedIn ? getCurrentUser() : null;
+
+// Fetch dynamic content
+$featuredArticles = getFeaturedArticles(6);
+$topAlbums = getTopAlbums(4);
+$topArtists = getTopArtists(4);
+$topSongs = getTopSongs(5);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,8 +26,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bubble</title>
-    <link rel="stylesheet" href="../assets/styling/style.css">
-    <link rel="stylesheet" href="../assets/styling/home.css">
+    <link rel="stylesheet" href="assets/styling/style.css">
+    <link rel="stylesheet" href="assets/styling/home.css">
+    <link rel="stylesheet" href="assets/styling/favorites.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
@@ -26,7 +48,7 @@
 
                 <div class="navbar">
                     <div class="nav">
-                        <a href="./index.html" class="active">
+                        <a href="./index.php" class="active">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-house-icon lucide-house">
@@ -36,7 +58,7 @@
                             </svg>
                             Home
                         </a>
-                        <a href="./view/explore.html">
+                        <a href="./view/explore_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-compass-icon lucide-compass">
@@ -46,7 +68,7 @@
                             </svg>
                             Explore
                         </a>
-                        <a href="./view/radio.html">
+                        <a href="./view/radio_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-radio-icon lucide-radio">
@@ -58,7 +80,7 @@
                             </svg>
                             Radio
                         </a>
-                        <a href="./view/library.html">
+                        <a href="./view/library_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-library-icon lucide-library">
@@ -69,6 +91,17 @@
                             </svg>
                             Library
                         </a>
+                        <?php if (isAdmin()): ?>
+                            <a href="./view/admin_view.php">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-shield-check">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                                    <path d="m9 12 2 2 4-4" />
+                                </svg>
+                                Admin
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -79,7 +112,7 @@
                         YOUR PLAYLIST
                     </h3>
                     <div class="nav">
-                        <a href="./view/favoriete.html">
+                        <a href="./view/favoriete_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
@@ -105,108 +138,38 @@
 
                 <div class="herosection">
                     <div class="newsimg">
-                        <div class="news-content" id="news1">
-                            <h1>*Love* Genshin Impact</h1>
-                            <p>Otis vind Genshin Impact een goed spel en het is echt niet verslavend Money Brings
-                                happienes</p>
-                            <div class="news-buttons">
-                                <button class="play-mix">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                        <path
-                                            d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                    </svg>
-                                    PLAYMIX
-                                </button>
-                                <button class="read-article">READ ARTICLE</button>
+                        <?php if (count($featuredArticles) > 0): ?>
+                            <?php foreach ($featuredArticles as $index => $article): ?>
+                                <div class="news-content" id="news<?= $index + 1 ?>"
+                                    style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('<?= htmlspecialchars($article['banner_image']) ?>');">
+                                    <h1><?= htmlspecialchars($article['title']) ?></h1>
+                                    <p><?= htmlspecialchars($article['excerpt']) ?></p>
+                                    <div class="news-buttons">
+                                        <button class="read-article"
+                                            onclick="window.location.href='view/article_view.php?slug=<?= htmlspecialchars($article['slug']) ?>'">READ
+                                            ARTICLE</button>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="news-content" id="news1">
+                                <h1>Welcome to Bubble</h1>
+                                <p>Discover amazing music and playlists curated just for you.</p>
+                                <div class="news-buttons">
+                                    <button class="play-mix">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                            fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
+                                            stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
+                                            <path
+                                                d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
+                                        </svg>
+                                        PLAYMIX
+                                    </button>
+                                    <button class="read-article"
+                                        onclick="window.location.href='view/explore_view.php'">EXPLORE</button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="news-content" id="news2">
-                            <h1>*HATE* Genshin Impact</h1>
-                            <p>Mo vind Genshin Impact een slecht spel en het is echt verslavend Money Brings happienes
-                            </p>
-                            <div class="news-buttons">
-                                <button class="play-mix">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                        <path
-                                            d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                    </svg>
-                                    PLAYMIX
-                                </button>
-                                <button class="read-article">READ ARTICLE</button>
-                            </div>
-                        </div>
-                        <div class="news-content" id="news3">
-                            <h1>*Love* Genshin Impact</h1>
-                            <p>Otis vind Genshin Impact een goed spel en het is echt niet verslavend Money Brings
-                                happienes</p>
-                            <div class="news-buttons">
-                                <button class="play-mix">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                        <path
-                                            d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                    </svg>
-                                    PLAYMIX
-                                </button>
-                                <button class="read-article">READ ARTICLE</button>
-                            </div>
-                        </div>
-                        <div class="news-content" id="news4">
-                            <h1>*HATE* Genshin Impact</h1>
-                            <p>Mo vind Genshin Impact een slecht spel en het is echt verslavend Money Brings happienes
-                            </p>
-                            <div class="news-buttons">
-                                <button class="play-mix">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                        <path
-                                            d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                    </svg>
-                                    PLAYMIX
-                                </button>
-                                <button class="read-article">READ ARTICLE</button>
-                            </div>
-                        </div>
-                        <div class="news-content" id="news5">
-                            <h1>*Love* Genshin Impact</h1>
-                            <p>Otis vind Genshin Impact een goed spel en het is echt niet verslavend Money Brings
-                                happienes</p>
-                            <div class="news-buttons">
-                                <button class="play-mix">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                        <path
-                                            d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                    </svg>
-                                    PLAYMIX
-                                </button>
-                                <button class="read-article">READ ARTICLE</button>
-                            </div>
-                        </div>
-                        <div class="news-content" id="news6">
-                            <h1>*HATE* Genshin Impact</h1>
-                            <p>Mo vind Genshin Impact een slecht spel en het is echt verslavend Money Brings happienes
-                            </p>
-                            <div class="news-buttons">
-                                <button class="play-mix">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
-                                        <path
-                                            d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
-                                    </svg>
-                                    PLAYMIX
-                                </button>
-                                <button class="read-article">READ ARTICLE</button>
-                            </div>
-                        </div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="news">
@@ -236,18 +199,22 @@
                         </svg>
                     </div>
                     <div class="albums-grid">
-                        <div class="album-item">
-                            <img src="../assets/images/albumcover1.png" alt="Album 1">
-                        </div>
-                        <div class="album-item">
-                            <img src="../assets/images/albumcover1.png" alt="Album 2">
-                        </div>
-                        <div class="album-item">
-                            <img src="../assets/images/albumcover1.png" alt="Album 3">
-                        </div>
-                        <div class="album-item">
-                            <img src="../assets/images/albumcover1.png" alt="Album 4">
-                        </div>
+                        <?php foreach ($topAlbums as $album): ?>
+                            <div class="album-item" data-album-id="<?= $album['id'] ?>">
+                                <img src="<?= htmlspecialchars($album['cover_image'] ?? 'assets/images/albumcover1.png') ?>"
+                                    alt="<?= htmlspecialchars($album['title']) ?>">
+                                <div class="album-play-overlay">
+                                    <svg class="lucide lucide-play" xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="6 3 20 12 6 21 6 3" />
+                                    </svg>
+                                </div>
+                                <h4 class="album-title"><?= htmlspecialchars($album['title']) ?></h4>
+                                <p class="album-artist"><?= htmlspecialchars($album['artist_name'] ?? 'Unknown Artist') ?>
+                                </p>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
@@ -264,18 +231,14 @@
                         </svg>
                     </div>
                     <div class="albums-grid">
-                        <div class="album-item artist-item">
-                            <img src="../assets/images/albumcover1.png" alt="Artist 1">
-                        </div>
-                        <div class="album-item artist-item">
-                            <img src="../assets/images/albumcover1.png" alt="Artist 2">
-                        </div>
-                        <div class="album-item artist-item">
-                            <img src="../assets/images/albumcover1.png" alt="Artist 3">
-                        </div>
-                        <div class="album-item artist-item">
-                            <img src="../assets/images/albumcover1.png" alt="Artist 4">
-                        </div>
+                        <?php foreach ($topArtists as $artist): ?>
+                            <div class="album-item artist-item" data-artist-id="<?= $artist['id'] ?>">
+                                <img src="<?= htmlspecialchars($artist['image_url'] ?? 'assets/images/albumcover1.png') ?>"
+                                    alt="<?= htmlspecialchars($artist['name']) ?>">
+                                <h4 class="artist-name"><?= htmlspecialchars($artist['name']) ?></h4>
+                                <p class="artist-genre"><?= htmlspecialchars($artist['genre'] ?? '') ?></p>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -304,24 +267,35 @@
                                 d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
                         </svg>
                     </button>
-                    <button onclick="login()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-user-icon lucide-user">
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </button>
+                    <?php if ($isLoggedIn): ?>
+                        <button onclick="goToProfile()" title="Profile">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-user-icon lucide-user">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </button>
+                    <?php else: ?>
+                        <button onclick="login()" class="sign-in-btn" title="Sign in">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-user-icon lucide-user">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <span class="sign-in-text">Sign in</span>
+                        </button>
+                    <?php endif; ?>
                 </div>
 
                 <div class="playing">
                     <h3>Currently playing</h3>
 
                     <div class="nowplaying">
-                        <div id="canvas-container"></div>
-                        <img src="../assets/images/albumcover1.png" alt="">
-                        <h3>Song Name</h3>
-
+                        <img src="assets/images/albumcover1.png" alt="Now Playing">
+                        <h3>Select a song to play</h3>
+                        <p>Artist</p>
                         <div class="songInfo"></div>
                     </div>
                 </div>
@@ -329,28 +303,15 @@
                 <div class="nextsongs">
                     <h3>Next song</h3>
 
-                    <div class="nextup">
-                        <div class="lirbrarySongs" id="playing">
-                            <div class="songimg">
-                                <img src="../assets/images/albumcover1.png" alt="">
-                                <div class="songdetails">
-                                    <h3>Song Name</h3>
-                                    <div class="exstrInfo">
-                                        <p>Artist Name • 2024</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="songduration">
-                                <p>3:45</p>
-                            </div>
-                        </div>
+                    <div class="nextup next-songs">
+                        <p class="no-upcoming">No songs in queue</p>
                     </div>
                 </div>
+
                 <div class="lyrics">
-                    <h2>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis numquam dicta quos, aperiam nam
-                        beatae iure amet rem reprehenderit tenetur voluptatibus laborum dolorem placeat? Nam asperiores
-                        consectetur libero quas tenetur accusamus deleniti expedita sunt!</h2>
+                    <h2>Lyrics</h2>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 1rem;">No lyrics available
+                    </p>
                 </div>
             </div>
         </main>
@@ -360,7 +321,7 @@
         <div class="player">
             <div class="player-main">
                 <div class="player-left">
-                    <img src="../assets/images/albumcover1.png" alt="Song cover">
+                    <img src="./assets/images/albumcover1.png" alt="Song cover">
                     <div class="player-info">
                         <h4>Song Name</h4>
                         <p>Artist Name</p>
@@ -432,12 +393,15 @@
             </div>
         </div>
     </div>
-    <script src="../javascript/home.js"></script>
-
+    <!-- Audio Player Scripts -->
+    <script src="javascript/audio-player.js"></script>
+    <script src="javascript/queue-manager.js"></script>
+    <script src="javascript/player-ui.js"></script>
+    <script src="javascript/favorites.js"></script>
+    <script src="javascript/home.js"></script>
 
     <script type="module">
-        import { initSurrealBackground } from '../javascript/surreal-bg.js'
-
+        import { initSurrealBackground } from './javascript/surreal-bg.js'
         initSurrealBackground('canvas-container')
     </script>
 </body>

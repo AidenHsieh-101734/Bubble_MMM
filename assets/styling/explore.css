@@ -1,78 +1,141 @@
-body{
-    overflow: hidden;
-}
-.exploreSection{
-    width: 84%;
-    border: white 4px solid;
-    border-radius: 50px;
-    margin-top: 10px;
-    overflow: scroll;
-}
-.exploreSection::-webkit-scrollbar {
-    display: none;
-  }
-main{
-    height: 100vh;
-    margin: 0;
-    margin-bottom: 10px;
-}
-.exploreSectionBTN{
+/* =========================================
+   Bubbl Explore - Cleaned Styles
+   ========================================= */
+
+/* Only keep styles that are NOT in home.css or are specific to Explore logic */
+
+/* --- Navigation Pill (Tabs) --- */
+.exploreSectionBTN {
     position: relative;
-    width: 100%;
+    width: 60%;
+    margin: 30px auto 40px auto;
+    background: rgba(14, 14, 14, 0.4);
+    /* Darker glass for contrast */
+    border: 1px solid var(--border-light);
+    border-radius: 100px;
+    height: 55px;
+    /* Slightly taller */
     display: flex;
-    justify-content: space-around;
-    margin-top: 40px;
-    background-color: rgba(255, 255, 255, 0.152);
-    height: 50px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
-.exploreSectionBTN button{
-    all: unset;
+
+.exploreSectionBTN button {
+    flex: 1;
+    background: transparent;
+    border: none;
     cursor: pointer;
-    font-family: 'Syncopate', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-muted);
     z-index: 2;
-}
-.LeesContainer{
-    margin-top: 50px;
-}
-.Lees{
-    display: flex;
-    justify-content: center;
-    gap: 70px;
-    text-align: center;
-    margin-bottom: 30px;
-}
-.Lees::-webkit-scrollbar {
-    display: none;
-  }
-.leesdiv{
-    font-size: 1.1rem;
-    background-color: #9055f8;
-    padding: 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-.leesdiv:hover{
-    transform: translateY(-10px);
-}
-.leesdiv img{
-    width: 250px;
-    border-radius: 16px;
-}
-.LeesContainer h2{
-    margin: 10px 50px 30px 50px;
-}
-#BekijkSection, #LuisterSection{
-    display: none;
-}
-#animationdiv{
-    position: absolute;
-    width: 25%;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-radius: 100px;
+    /* Ensure hover shape matches */
     height: 100%;
-    top: 0;
-    left: 4%;
-    background-color: rgba(188, 188, 188, 0.283);
+}
+
+.exploreSectionBTN button:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.exploreSectionBTN button.active {
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Sliding Pill Animation */
+#animationdiv {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    width: calc(33.33% - 7px);
+    /* Adjust for padding/gap */
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    /* Gradient pill */
+    border-radius: 100px;
     z-index: 1;
-    border-radius: 226px;
-    transition: 0.3s;
+    transition: left 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+/* Default position (Read) */
+/* JS will handle the 'left' property updates, but we can set default here */
+
+/* --- Genre specific overrides for colors --- */
+.genre-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: var(--radius-md, 20px);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* Matches other cards */
+    aspect-ratio: 1;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    /* Subtle border */
+    position: relative;
+}
+
+.genre-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+    z-index: 1;
+}
+
+.genre-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.genre-card h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    margin: 0;
+    z-index: 2;
+    letter-spacing: 1px;
+}
+
+/* --- Section Containers --- */
+/* Transitions for tab switching */
+.section-container {
+    animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    .exploreSectionBTN {
+        width: 90%;
+        height: 45px;
+        margin-bottom: 25px;
+    }
+
+    .exploreSectionBTN button {
+        font-size: 0.8rem;
+    }
 }

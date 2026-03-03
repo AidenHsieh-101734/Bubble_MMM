@@ -1,3 +1,31 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../logic/utils/auth.php';
+require_once __DIR__ . '/../logic/content/favorites.php';
+require_once __DIR__ . '/../logic/content/songs.php';
+
+$isLoggedIn = isAuthenticated();
+$currentUser = $isLoggedIn ? getCurrentUser() : null;
+
+// Fetch favorites
+if ($isLoggedIn) {
+    $favoriteSongs = getFavoriteSongs($currentUser['id']);
+    $totalDuration = getFavoriteSongsTotalDuration($currentUser['id']);
+    $formattedDuration = formatFavoritesDuration($totalDuration);
+    $songCount = count($favoriteSongs);
+} else {
+    // Show top songs for non-logged in users
+    $favoriteSongs = getTopSongs(10);
+    $totalDuration = 0;
+    foreach ($favoriteSongs as $song) {
+        $totalDuration += $song['duration'] ?? 0;
+    }
+    $formattedDuration = formatFavoritesDuration($totalDuration);
+    $songCount = count($favoriteSongs);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,6 +35,7 @@
     <title>Bubble - Favorites</title>
     <link rel="stylesheet" href="../assets/styling/style.css">
     <link rel="stylesheet" href="../assets/styling/home.css">
+    <link rel="stylesheet" href="../assets/styling/favorites.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
@@ -24,7 +53,7 @@
 
                 <div class="navbar">
                     <div class="nav">
-                        <a href="../index.html">
+                        <a href="../index.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-house-icon lucide-house">
@@ -34,7 +63,7 @@
                             </svg>
                             Home
                         </a>
-                        <a href="explore.html">
+                        <a href="explore_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-compass-icon lucide-compass">
@@ -44,7 +73,7 @@
                             </svg>
                             Explore
                         </a>
-                        <a href="radio.html">
+                        <a href="radio_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-radio-icon lucide-radio">
@@ -56,7 +85,7 @@
                             </svg>
                             Radio
                         </a>
-                        <a href="library.html">
+                        <a href="library_view.php">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-library-icon lucide-library">
@@ -75,7 +104,7 @@
                 <div class="navbar Library">
                     <h3>YOUR PLAYLIST</h3>
                     <div class="nav">
-                        <a href="favoriete.html" class="active">
+                        <a href="favoriete_view.php" class="active">
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3.25" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
@@ -111,19 +140,20 @@
                         </div>
                         <div class="favorite-info">
                             <p>Playlist</p>
-                            <h1>Favorite Songs</h1>
+                            <h1><?= $isLoggedIn ? 'Favorite Songs' : 'Top Songs' ?></h1>
                             <div class="favorite-meta">
-                                <p>Your Name</p>
+                                <p><?= $isLoggedIn ? htmlspecialchars($currentUser['username'] ?? 'You') : 'Bubble' ?>
+                                </p>
                                 <span>•</span>
-                                <p>52 songs</p>
+                                <p><?= $songCount ?> songs</p>
                                 <span>•</span>
-                                <p>3h 24min</p>
+                                <p><?= $formattedDuration ?></p>
                             </div>
                         </div>
                     </div>
 
                     <div class="favorite-controls">
-                        <button class="favorite-play-btn">
+                        <button class="favorite-play-btn" id="playAllFavorites">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
                                 fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-play-icon lucide-play">
@@ -133,7 +163,7 @@
                         </button>
                         <button class="favorite-heart-btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"
-                                fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                fill="var(--accent)" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="lucide lucide-heart">
                                 <path
                                     d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
@@ -150,132 +180,47 @@
                         </button>
                     </div>
 
-                    <div class="favorite-songs-list">
-                        <div class="favorite-song-item">
-                            <div class="favorite-song-left">
-                                <span class="favorite-song-number">1</span>
-                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
-                                <div class="favorite-song-info">
-                                    <h3>Genshin Impact</h3>
-                                    <p>Money</p>
+                    <div class="favorite-songs-list song-list-container">
+                        <?php if (count($favoriteSongs) === 0): ?>
+                            <div class="no-favorites">
+                                <p><?= $isLoggedIn ? 'No favorite songs yet. Start adding songs to your favorites!' : 'Sign in to save your favorite songs.' ?>
+                                </p>
+                                <?php if (!$isLoggedIn): ?>
+                                    <a href="login_view.php" class="btn-login">Sign In</a>
+                                <?php endif; ?>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($favoriteSongs as $index => $song): ?>
+                                <div class="favorite-song-item song-item" data-song-id="<?= $song['id'] ?>"
+                                    data-song-title="<?= htmlspecialchars($song['title']) ?>"
+                                    data-song-artist="<?= htmlspecialchars($song['artist_name'] ?? 'Unknown Artist') ?>"
+                                    data-song-audio="<?= htmlspecialchars($song['audio_file_path']) ?>"
+                                    data-song-cover="<?= htmlspecialchars($song['cover_image'] ?? '../assets/images/albumcover1.png') ?>"
+                                    data-song-duration="<?= $song['duration'] ?>">
+                                    <div class="favorite-song-left">
+                                        <span class="favorite-song-number"><?= $index + 1 ?></span>
+                                        <img src="<?= htmlspecialchars($song['cover_image'] ?? '../assets/images/albumcover1.png') ?>"
+                                            alt="<?= htmlspecialchars($song['title']) ?>" class="favorite-song-img">
+                                        <div class="favorite-song-info">
+                                            <h3><?= htmlspecialchars($song['title']) ?></h3>
+                                            <p><?= htmlspecialchars($song['artist_name'] ?? 'Unknown Artist') ?></p>
+                                        </div>
+                                    </div>
+                                    <div class="favorite-song-right">
+                                        <p class="favorite-song-album">
+                                            <?= htmlspecialchars($song['album_title'] ?? $song['title']) ?>
+                                        </p>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                            fill="var(--accent)" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
+                                            <path
+                                                d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                                        </svg>
+                                        <p class="favorite-song-duration"><?= formatDuration($song['duration'] ?? 0) ?></p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="favorite-song-right">
-                                <p class="favorite-song-album">Money</p>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
-                                    <path
-                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                                </svg>
-                                <p class="favorite-song-duration">3:45</p>
-                            </div>
-                        </div>
-
-                        <div class="favorite-song-item">
-                            <div class="favorite-song-left">
-                                <span class="favorite-song-number">2</span>
-                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
-                                <div class="favorite-song-info">
-                                    <h3>Genshin Impact</h3>
-                                    <p>Money</p>
-                                </div>
-                            </div>
-                            <div class="favorite-song-right">
-                                <p class="favorite-song-album">Money</p>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
-                                    <path
-                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                                </svg>
-                                <p class="favorite-song-duration">4:12</p>
-                            </div>
-                        </div>
-
-                        <div class="favorite-song-item">
-                            <div class="favorite-song-left">
-                                <span class="favorite-song-number">3</span>
-                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
-                                <div class="favorite-song-info">
-                                    <h3>Genshin Impact</h3>
-                                    <p>Money</p>
-                                </div>
-                            </div>
-                            <div class="favorite-song-right">
-                                <p class="favorite-song-album">Money</p>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
-                                    <path
-                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                                </svg>
-                                <p class="favorite-song-duration">5:01</p>
-                            </div>
-                        </div>
-
-                        <div class="favorite-song-item">
-                            <div class="favorite-song-left">
-                                <span class="favorite-song-number">4</span>
-                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
-                                <div class="favorite-song-info">
-                                    <h3>Genshin Impact</h3>
-                                    <p>Money</p>
-                                </div>
-                            </div>
-                            <div class="favorite-song-right">
-                                <p class="favorite-song-album">Money</p>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
-                                    <path
-                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                                </svg>
-                                <p class="favorite-song-duration">3:28</p>
-                            </div>
-                        </div>
-
-                        <div class="favorite-song-item">
-                            <div class="favorite-song-left">
-                                <span class="favorite-song-number">5</span>
-                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
-                                <div class="favorite-song-info">
-                                    <h3>Genshin Impact</h3>
-                                    <p>Money</p>
-                                </div>
-                            </div>
-                            <div class="favorite-song-right">
-                                <p class="favorite-song-album">Money</p>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
-                                    <path
-                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                                </svg>
-                                <p class="favorite-song-duration">4:33</p>
-                            </div>
-                        </div>
-
-                        <div class="favorite-song-item">
-                            <div class="favorite-song-left">
-                                <span class="favorite-song-number">6</span>
-                                <img src="../assets/images/albumcover1.png" alt="" class="favorite-song-img">
-                                <div class="favorite-song-info">
-                                    <h3>Genshin Impact</h3>
-                                    <p>Money</p>
-                                </div>
-                            </div>
-                            <div class="favorite-song-right">
-                                <p class="favorite-song-album">Money</p>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-heart favorite-song-heart">
-                                    <path
-                                        d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                                </svg>
-                                <p class="favorite-song-duration">6:15</p>
-                            </div>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -303,23 +248,35 @@
                                 d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
                         </svg>
                     </button>
-                    <button onclick="login()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-user-icon lucide-user">
-                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </button>
+                    <?php if ($isLoggedIn): ?>
+                        <button onclick="window.location.href='profile_view.php'" title="Profile">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-user-icon lucide-user">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </button>
+                    <?php else: ?>
+                        <button onclick="window.location.href='login_view.php'" class="sign-in-btn" title="Sign in">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-user-icon lucide-user">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <span class="sign-in-text">Sign in</span>
+                        </button>
+                    <?php endif; ?>
                 </div>
 
                 <div class="playing">
                     <h3>Currently playing</h3>
 
                     <div class="nowplaying">
-                        <img src="../assets/images/albumcover1.png" alt="">
-                        <h3>Song Name</h3>
-
+                        <img src="../assets/images/albumcover1.png" alt="Now Playing">
+                        <h3>Select a song</h3>
+                        <p>Artist</p>
                         <div class="songInfo"></div>
                     </div>
                 </div>
@@ -327,27 +284,15 @@
                 <div class="nextsongs">
                     <h3>Next song</h3>
 
-                    <div class="nextup">
-                        <div class="lirbrarySongs" id="playing">
-                            <div class="songimg">
-                                <img src="../assets/images/albumcover1.png" alt="">
-                                <div class="songdetails">
-                                    <h3>Song Name</h3>
-                                    <div class="exstrInfo">
-                                        <p>Artist Name • 2024</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="songduration">
-                                <p>3:45</p>
-                            </div>
-                        </div>
+                    <div class="nextup next-songs">
+                        <p class="no-upcoming">No songs in queue</p>
                     </div>
                 </div>
+
                 <div class="lyrics">
-                    <h2>Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis numquam dicta quos, aperiam nam
-                        beatae iure</h2>
+                    <h2>Lyrics</h2>
+                    <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; margin-top: 1rem;">No lyrics available
+                    </p>
                 </div>
             </div>
         </main>
@@ -359,8 +304,8 @@
                 <div class="player-left">
                     <img src="../assets/images/albumcover1.png" alt="Song cover">
                     <div class="player-info">
-                        <h4>Midnight Dreams</h4>
-                        <p>The Dreamers</p>
+                        <h4>Song Name</h4>
+                        <p>Artist Name</p>
                     </div>
                 </div>
 
@@ -390,11 +335,11 @@
 
             <div class="player-expanded">
                 <div class="player-progress">
-                    <span>1:12</span>
+                    <span>0:00</span>
                     <div class="progress-bar">
                         <div class="progress"></div>
                     </div>
-                    <span>3:45</span>
+                    <span>0:00</span>
                 </div>
 
                 <div class="player-extra">
@@ -406,30 +351,33 @@
                             <path d="M16 9a5 5 0 0 1 0 6" />
                             <path d="M19.364 18.364a9 9 0 0 0 0-12.728" />
                         </svg></button>
-                    <button class="repeat-btn" onclick="toggleRepeat()"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.25"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-repeat-icon lucide-repeat" id="repeat-normal">
+                    <button class="repeat-btn"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+                            viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round"
+                            stroke-linejoin="round" class="lucide lucide-repeat-icon lucide-repeat">
                             <path d="m17 2 4 4-4 4" />
                             <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
                             <path d="m7 22-4-4 4-4" />
                             <path d="M21 13v1a4 4 0 0 1-4 4H3" />
-                        </svg><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                            fill="none" stroke="#ffffff" stroke-width="2.25" stroke-linecap="round"
-                            stroke-linejoin="round" class="lucide lucide-repeat1-icon lucide-repeat-1" id="repeat-one"
-                            style="display:none;">
-                            <path d="m17 2 4 4-4 4" />
-                            <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-                            <path d="m7 22-4-4 4-4" />
-                            <path d="M21 13v1a4 4 0 0 1-4 4H3" />
-                            <path d="M11 10h1v4" />
                         </svg></button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Audio Player Scripts -->
+    <script src="../javascript/audio-player.js"></script>
+    <script src="../javascript/queue-manager.js"></script>
+    <script src="../javascript/player-ui.js"></script>
     <script src="../javascript/home.js"></script>
+    <script>
+        // Play all favorites button
+        document.getElementById('playAllFavorites')?.addEventListener('click', function () {
+            const songItems = document.querySelectorAll('.favorite-song-item');
+            if (songItems.length > 0) {
+                songItems[0].click();
+            }
+        });
+    </script>
     <script type="module">
         import { initSurrealBackground } from '../javascript/surreal-bg.js'
         initSurrealBackground('canvas-container')

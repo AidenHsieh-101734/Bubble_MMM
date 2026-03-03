@@ -1,0 +1,71 @@
+/* Favorites Styling */
+.favorite-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    /* Default grayed out */
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.favorite-btn:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.favorite-btn.active {
+    color: #ef4444;
+    /* Red color for active */
+}
+
+.favorite-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2.5;
+}
+
+/* Song Actions Wrapper (in grid view) */
+.song-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 5;
+    position: relative;
+}
+
+.song-actions .songduration {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Song Actions Right (in list view) */
+.song-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+    z-index: 5;
+    position: relative;
+}
+
+.song-actions-right .favorite-btn {
+    opacity: 1;
+    /* Always visible */
+    transform: none;
+}
+
+.song-item:hover .song-actions-right .favorite-btn,
+.favorite-btn.active {
+    opacity: 1;
+    transform: none;
+}

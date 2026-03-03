@@ -1,0 +1,187 @@
+/* Extracted from article_view.php */
+.article-content {
+    padding: 2rem;
+    color: white;
+    max-width: 800px;
+    margin: 0 auto;
+    /* Added for layout and scrolling */
+    flex: 2;
+    height: calc(100vh - 150px);
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    background: rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+.article-header h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, white 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+    background-clip: text;
+    /* Added for compatibility */
+}
+
+.article-meta {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.article-banner {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.article-text {
+    line-height: 1.8;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.article-text p {
+    margin-bottom: 1.5rem;
+}
+
+.media-embed {
+    margin: 2rem 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.media-embed h3 {
+    margin-bottom: 1rem;
+}
+
+.media-content {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.mix-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-play-mix {
+    background: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.mix-details p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-video {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.3s;
+}
+
+.btn-video:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    /* Display is managed by JS, but default hidden in CSS can be overridden or handled by inline style if needed. 
+       However, to avoid FOUC, we might want it hidden by default. 
+       But JS toggles 'flex' and 'none'. */
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.overlay-content {
+    padding: 2rem;
+    width: 80%;
+    max-width: 900px;
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.btn-close-overlay {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.video-responsive {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.video-responsive iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.overlay-footer {
+    margin-top: 1.5rem;
+}
+
+.overlay-title {
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, white 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.overlay-desc {
+    color: rgba(255, 255, 255, 0.7);
+}

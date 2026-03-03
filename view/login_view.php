@@ -1,3 +1,8 @@
+<?php
+
+require_once __DIR__ . '/../logic/login.php';
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,11 +26,20 @@
                 <p>Welkom terug!</p>
             </div>
 
-            <form id="login-form" class="auth-form" action="">
+            <?php if (!empty($errors['general'])): ?>
+                <div class="error-box">
+                    <?= htmlspecialchars($errors['general']) ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" class="auth-form">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="je@email.com" required>
-                    <span class="error-message" id="email-error"></span>
+                    <input type="email" id="email" name="email" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
+                        placeholder="je@email.com" required>
+                    <?php if (!empty($errors['email'])): ?>
+                        <span class="error-message"><?= htmlspecialchars($errors['email']) ?></span>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">
@@ -36,26 +50,22 @@
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
-                    <span class="error-message" id="password-error"></span>
+                    <?php if (!empty($errors['password'])): ?>
+                        <span class="error-message"><?= htmlspecialchars($errors['password']) ?></span>
+                    <?php endif; ?>
                 </div>
 
                 <button type="submit" class="auth-button">Inloggen</button>
             </form>
 
             <div class="auth-footer">
-                <p>Nog geen account? <a href="register.html">Registreer hier</a></p>
+                <p>Nog geen account? <a href="register_view.php">Registreer hier</a><br>
+                    Of <a href="../index.php">visit Bubble!</a></p>
             </div>
         </div>
     </div>
 
-    <script src="../javascript/surreal-bg.js"></script>
-    <script src="../javascript/auth.js"></script>
-
-    <script type="module">
-        import { initSurrealBackground } from '../javascript/surreal-bg.js'
-
-        initSurrealBackground('canvas-container')
-    </script>
+    <script type="module" src="../javascript/auth-ui.js"></script>
 </body>
 
 </html>

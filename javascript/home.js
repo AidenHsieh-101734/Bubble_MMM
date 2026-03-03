@@ -1,31 +1,38 @@
-const allNewsImgs = document.querySelectorAll(".news-content");
-let currentIndex = 0;
+(function () {
+    const allNewsImgs = document.querySelectorAll(".news-content");
+    let currentIndex = 0;
 
-if (allNewsImgs.length > 0) {
-    allNewsImgs[0].classList.add('active');
-}
+    if (allNewsImgs.length > 0) {
+        allNewsImgs[0].classList.add('active');
+    }
 
-// -- HELPER FUNCTIONS -- \\
-function switchSlide(index) {
-    if (allNewsImgs.length === 0) return;
+    // Expose functions to global scope if needed for inline onclick handlers
+    window.switchSlide = function (index) {
+        if (allNewsImgs.length === 0) return;
 
-    allNewsImgs.forEach(img => img.classList.remove('active'));
-    allNewsImgs[index].classList.add('active');
+        allNewsImgs.forEach(img => img.classList.remove('active'));
+        allNewsImgs[index].classList.add('active');
 
-    currentIndex = index;
-}
+        currentIndex = index;
+    }
 
-function omhoog() {
-    if (allNewsImgs.length === 0) return;
-    let nextIndex = (currentIndex + 1) % allNewsImgs.length;
-    switchSlide(nextIndex);
-}
+    window.omhoog = function () {
+        if (allNewsImgs.length === 0) return;
+        let nextIndex = (currentIndex + 1) % allNewsImgs.length;
+        switchSlide(nextIndex);
+    }
 
-function omlaag() {
-    if (allNewsImgs.length === 0) return;
-    let nextIndex = (currentIndex - 1 + allNewsImgs.length) % allNewsImgs.length;
-    switchSlide(nextIndex);
-}
+    window.omlaag = function () {
+        if (allNewsImgs.length === 0) return;
+        let nextIndex = (currentIndex - 1 + allNewsImgs.length) % allNewsImgs.length;
+        switchSlide(nextIndex);
+    }
+})();
+
+// These functions seem to be used by onclicks, so they need to be global, but strictly defining them.
+// Actually, `toggleRepeat`, `login`, `goToProfile` don't depend on the `const` above.
+// But `omhoog` and `omlaag` DO depend on `allNewsImgs` and `currentIndex`.
+// The fix above makes them global window functions closing over the private variables.
 
 function toggleRepeat() {
     const repeatNormal = document.getElementById('repeat-normal');
@@ -41,6 +48,18 @@ function toggleRepeat() {
 }
 
 function login() {
-    window.location.href = "../view/login.html";
+    if (window.location.pathname.includes('/view/')) {
+        window.location.href = "login_view.php";
+    } else {
+        window.location.href = "view/login_view.php";
+    }
+}
+
+function goToProfile() {
+    if (window.location.pathname.includes('/view/')) {
+        window.location.href = "profile_view.php";
+    } else {
+        window.location.href = "view/profile_view.php";
+    }
 }
 
